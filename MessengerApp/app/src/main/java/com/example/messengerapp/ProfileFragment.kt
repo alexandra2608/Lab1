@@ -6,6 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.viewModels
+import com.google.android.material.button.MaterialButton
+import com.example.messengerapp.viewmodel.ProfileViewModel
+
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -16,6 +23,8 @@ class ProfileFragment : Fragment() {
     private var param2: String? = null
 
     private val tag = "ProfileFragment"
+
+    private val profileViewModel:  ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +46,47 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Log.d(tag, "onViewCreated called")
+        val usernameTextView = view.findViewById<TextView>(R.id.usernameTextView)
+        val aboutTextView = view.findViewById<TextView>(R.id.aboutTextView)
+        val editProfileButton = view.findViewById<MaterialButton>(R.id.editProfileButton)
+
+        profileViewModel.userName.observe(viewLifecycleOwner) { name ->
+            usernameTextView.text = name
+        }
+
+        profileViewModel.status.observe(viewLifecycleOwner) { status ->
+            aboutTextView.text = status
+        }
+
+        editProfileButton.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_edit_profile, null)
+
+            val editName = dialogView.findViewById<EditText>(R.id.editUserName)
+            val editStatus = dialogView.findViewById<EditText>(R.id.editStatus)
+
+            editName.setText(profileViewModel.userName.value)
+            editStatus.setText(profileViewModel.status.value)
+
+            val alertDialog = AlertDialog.Builder(requireContext())
+                .setTitle("Редактирование профиля")
+                .setView(dialogView)
+                .setPositiveButton("Сохранить") { _, _ ->
+                    profileViewModel.userName.value = editName.text.toString()
+                    profileViewModel.status.value = editStatus.text.toString()
+                }
+                .setNegativeButton("Отмена", null)
+                .create()
+
+            editName.requestFocus()
+            alertDialog.setOnShowListener {
+                val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                imm.showSoftInput(editName, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT)
+            }
+
+            alertDialog.show()
+        }
+
+
     }
 
     override fun onStart() {

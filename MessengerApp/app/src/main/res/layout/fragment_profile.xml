@@ -68,20 +68,20 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Зарегистрирован: 12.03.2024"
-                    android:textSize="14sp"
+                    android:textSize="16sp"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:id="@+id/aboutTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Статус"
+                    android:textSize="16sp"
                     android:textColor="?attr/colorOnSurface" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-        <TextView
-            android:id="@+id/aboutTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="О себе: Люблю читать, учу итальянский и заканчиваю университет 📚💻"
-            android:textSize="16sp"
-            android:layout_marginBottom="24dp"
-            android:textAlignment="center"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/editProfileButton"

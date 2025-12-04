@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import android.content.Context
+import androidx.appcompat.app.AppCompatDelegate
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,6 +22,14 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_nav)
         bottomNav.setupWithNavController(navController)
+
+        val prefs = getSharedPreferences("settings", Context.MODE_PRIVATE)
+        val darkTheme = prefs.getBoolean("dark_theme", false)
+
+        AppCompatDelegate.setDefaultNightMode(
+            if (darkTheme) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
     }
 
     override fun onStart() {
