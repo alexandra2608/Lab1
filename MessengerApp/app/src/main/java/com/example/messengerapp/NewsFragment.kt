@@ -2,28 +2,32 @@ package com.example.messengerapp
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import androidx.lifecycle.ViewModelProvider
+import android.widget.Button
+import androidx.fragment.app.Fragment
+import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.messengerapp.adapter.MessagesAdapter
+import com.example.messengerapp.data.local.AppDatabase
+import com.example.messengerapp.data.remote.RetrofitClient
+import com.example.messengerapp.data.repository.MessageRepository
+import com.example.messengerapp.viewmodel.FeedViewModel
+import com.example.messengerapp.viewmodel.FeedViewModelFactory
 
 class NewsFragment : Fragment() {
 
     private val tag = "NewsFragment"
 
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var feedViewModel: FeedViewModel
+    private lateinit var adapter: MessagesAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(tag, "onCreate called")
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -32,6 +36,45 @@ class NewsFragment : Fragment() {
     ): View? {
         Log.d(tag, "onCreateView called")
         return inflater.inflate(R.layout.fragment_news, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val recyclerView = view.findViewById<RecyclerView>(R.id.messagesRecyclerView)
+        adapter = MessagesAdapter()
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = adapter
+
+        feedViewModel = ViewModelProvider(
+            this,
+            FeedViewModelFactory(
+                MessageRepository(
+                    RetrofitClient.api,
+                    AppDatabase.getDatabase(requireContext()).messageDao()
+                )
+            )
+        )[FeedViewModel::class.java]
+
+        feedViewModel.messages.observe(viewLifecycleOwner) { messages ->
+            adapter.submitList(messages)
+        }
+
+        feedViewModel.error.observe(viewLifecycleOwner) { errorMsg ->
+            errorMsg?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        feedViewModel.loading.observe(viewLifecycleOwner) { isLoading ->
+
+
+        }
+
+        val refreshButton = view.findViewById<Button>(R.id.refreshButton)
+        refreshButton.setOnClickListener {
+            feedViewModel.loadMessages()
+        }
     }
 
     override fun onStart() {
@@ -62,16 +105,5 @@ class NewsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(tag, "onDestroy called")
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            NewsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }

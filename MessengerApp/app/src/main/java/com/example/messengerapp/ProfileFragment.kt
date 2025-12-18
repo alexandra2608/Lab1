@@ -1,5 +1,6 @@
 package com.example.messengerapp
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -84,6 +85,9 @@ class ProfileFragment : Fragment() {
             }
 
             alertDialog.show()
+
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(Color.parseColor("#8780B3"))
+            alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(Color.parseColor("#8780B3"))
         }
 
 
