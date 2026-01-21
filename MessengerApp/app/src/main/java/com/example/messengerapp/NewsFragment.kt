@@ -6,9 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.messengerapp.adapter.MessagesAdapter
@@ -17,6 +18,7 @@ import com.example.messengerapp.data.remote.RetrofitClient
 import com.example.messengerapp.data.repository.MessageRepository
 import com.example.messengerapp.viewmodel.FeedViewModel
 import com.example.messengerapp.viewmodel.FeedViewModelFactory
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class NewsFragment : Fragment() {
 
@@ -42,13 +44,17 @@ class NewsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.messagesRecyclerView)
-        adapter = MessagesAdapter()
+        adapter = MessagesAdapter { message ->
+            feedViewModel.toggleLike(message)
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = adapter
 
         feedViewModel = ViewModelProvider(
             this,
             FeedViewModelFactory(
+                requireActivity().application,
                 MessageRepository(
                     RetrofitClient.api,
                     AppDatabase.getDatabase(requireContext()).messageDao()
@@ -58,6 +64,7 @@ class NewsFragment : Fragment() {
 
         feedViewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.submitList(messages)
+
         }
 
         feedViewModel.error.observe(viewLifecycleOwner) { errorMsg ->
@@ -71,10 +78,15 @@ class NewsFragment : Fragment() {
 
         }
 
-        val refreshButton = view.findViewById<Button>(R.id.refreshButton)
-        refreshButton.setOnClickListener {
-            feedViewModel.loadMessages()
+        val refreshFab = view.findViewById<FloatingActionButton>(R.id.refreshFab)
+        refreshFab.setOnClickListener {
+            feedViewModel.loadMessages(showNotification = true)
         }
+
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Лента"
+        toolbar.setTitleTextColor(resources.getColor(android.R.color.white, requireContext().theme))
     }
 
     override fun onStart() {

@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.viewModels
 import com.google.android.material.button.MaterialButton
 import com.example.messengerapp.viewmodel.ProfileViewModel
@@ -50,6 +52,11 @@ class ProfileFragment : Fragment() {
         val usernameTextView = view.findViewById<TextView>(R.id.usernameTextView)
         val aboutTextView = view.findViewById<TextView>(R.id.aboutTextView)
         val editProfileButton = view.findViewById<MaterialButton>(R.id.editProfileButton)
+
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Профиль"
+        toolbar.setTitleTextColor(resources.getColor(android.R.color.white, requireContext().theme))
 
         profileViewModel.userName.observe(viewLifecycleOwner) { name ->
             usernameTextView.text = name

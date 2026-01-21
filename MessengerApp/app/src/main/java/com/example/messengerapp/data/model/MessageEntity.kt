@@ -8,5 +8,6 @@ data class MessageEntity (
     @PrimaryKey val id: Int,
     val name: String,
     val email: String,
-    val body: String
+    val body: String,
+    val isLiked: Boolean = false
 )

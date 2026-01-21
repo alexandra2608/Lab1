@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.messengerapp.viewmodel.SettingsViewModel
 import com.google.android.material.switchmaterial.SwitchMaterial
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 
 
@@ -39,6 +41,11 @@ class SettingsFragment : Fragment() {
 
         val switchTheme = view.findViewById<SwitchMaterial>(R.id.switchTheme)
         val prefs = requireContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
+
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar)
+        (activity as? AppCompatActivity)?.supportActionBar?.title = "Настройки"
+        toolbar.setTitleTextColor(resources.getColor(android.R.color.white, requireContext().theme))
 
         settingsViewModel.isDarkTheme.observe(viewLifecycleOwner) { isDark ->
             ignoreListener = true

@@ -11,13 +11,16 @@ class MessageRepository (
     suspend fun getMessages(): List<MessageEntity> {
         return try {
             val messages = api.getMessages()
-
             dao.clear()
             dao.insertAll(messages)
-
             messages
         } catch (e: Exception) {
             dao.getAll()
         }
     }
+
+    suspend fun saveMessages(messages: List<MessageEntity>) {
+        dao.insertAll(messages)
+    }
+
 }
